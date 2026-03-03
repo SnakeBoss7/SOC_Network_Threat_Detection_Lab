@@ -100,18 +100,31 @@ Detection is typically performed by analyzing `Zeek`'s HTTP logs. Since malware 
 
 ### Splunk SPL Queries
 
-**1. Detection based on URI and Fast Beaconing**
+**1. Detection based on URI**
 This query analyzes requests where the URI remains consistent, looking for regular intervals typical of automated beacons.
 
+> Note:** for slow beconing we simply have to adjust the earliest and duration
+
 ```splunk
-index="zeek" sourcetype="bro:http:json" latest=-1h
+index="zeek" sourcetype="bro:http: json" earliest =- 10h
 | sort 0 id.orig_h id.resp_h _time
-| streamstats current=f last(_time) as prev_time by id.orig_h id.resp_h uri
-| eval interval = _time - prev_time
-| where interval > 0
-| stats count avg(interval) as avg_interval stdev(interval) as stand_dev min(interval) as min_interval max(interval) as max_interval by id.orig_h id.resp_h  uri
-| eval coff_variance = stand_dev/avg_interval
-| where count > 20 AND coff_variance < 0.3
+| streamstats current=f last(_time) as prev_time by id.orig_h id. resp_h uri
+| eval interval = _time - prev_timeS
+| where interval > 0 AND interval < 60
+| stats count avg(interval) as avg_interval
+stdev(interval) as stand_dev
+min(interval) as min_interval
+max(interval) as max_interval
+min(_time) as first_seen
+max(_time) as last_seen
+by id.orig_h id.resp_h uri
+| eval coff_variance = stand_dev/avg_interval,
+duration = last_seen - first_seen
+| where count > 30
+AND avg_interval > 5
+AND avg_interval < 30
+AND coff_variance < 0.3
+AND duration > 1000
 ```
 
 ![Splunk SPL Visualization](./images/Becon-Spl.png)
@@ -120,28 +133,50 @@ index="zeek" sourcetype="bro:http:json" latest=-1h
 This query focuses on communication between IP pairs regardless of the URI, identifying high-frequency beaconing.
 
 ```splunk
-index="zeek" sourcetype="bro:http:json" latest=-1h
+index="zeek" sourcetype="bro:http: json" earliest =- 10h
 | sort 0 id.orig_h id.resp_h _time
-| streamstats current=f last(_time) as prev_time by id.orig_h id.resp_h uri
-| eval interval = _time - prev_time
-| where interval > 0
-| stats count avg(interval) as avg_interval stdev(interval) as stand_dev min(interval) as min_interval max(interval) as max_interval by id.orig_h id.resp_h  
-| eval coff_variance = stand_dev/avg_interval
-| where count > 20 AND coff_variance < 0.3
+| streamstats current=f last(_time) as prev_time by id.orig_h id. resp_h 
+| eval interval = _time - prev_timeS
+| where interval > 0 AND interval < 60
+| stats count avg(interval) as avg_interval
+stdev(interval) as stand_dev
+min(interval) as min_interval
+max(interval) as max_interval
+min(_time) as first_seen
+max(_time) as last_seen
+by id.orig_h id.resp_h uri
+| eval coff_variance = stand_dev/avg_interval,
+duration = last_seen - first_seen
+| where count > 30
+AND avg_interval > 5
+AND avg_interval < 30
+AND coff_variance < 0.3
+AND duration > 1000
 ```
 
 **3. Detection based solely on IP (24-Hour Window)**
 Similar to the above, but analyzes a longer timeframe (last 24 hours) to catch slower or persistent beaconing.
 
 ```splunk
-index="zeek" sourcetype="bro:http:json" latest=-1d
+index="zeek" sourcetype="bro:http: json" earliest =- 10h
 | sort 0 id.orig_h id.resp_h _time
-| streamstats current=f last(_time) as prev_time by id.orig_h id.resp_h uri
-| eval interval = _time - prev_time
-| where interval > 0
-| stats count avg(interval) as avg_interval stdev(interval) as stand_dev min(interval) as min_interval max(interval) as max_interval by id.orig_h id.resp_h 
-| eval coff_variance = stand_dev/avg_interval
-| where count > 20 AND coff_variance < 0.3
+| streamstats current=f last(_time) as prev_time by id.orig_h id. resp_h 
+| eval interval = _time - prev_timeS
+| where interval > 0 AND interval < 60
+| stats count avg(interval) as avg_interval
+stdev(interval) as stand_dev
+min(interval) as min_interval
+max(interval) as max_interval
+min(_time) as first_seen
+max(_time) as last_seen
+by id.orig_h id.resp_h uri
+| eval coff_variance = stand_dev/avg_interval,
+duration = last_seen - first_seen
+| where count > 30
+AND avg_interval > 5
+AND avg_interval < 30
+AND coff_variance < 0.3
+AND duration > 1000
 ```
 **Suricata Rule**
 Suricata isn't really reliable to detect http beconing although we can write rule for it but it can potentailly generate a lot of false positives and there isn't really a fixed signature with http beconing to track with.

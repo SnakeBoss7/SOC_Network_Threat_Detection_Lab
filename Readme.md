@@ -6,7 +6,7 @@
 
 ## Skills Demonstrated
 
-`SIEM Querying (SPL)` · `IDS Rule Writing (Suricata)` · `Network Traffic Analysis (Zeek)` · `MITRE ATT&CK Mapping` · `Detection Engineering` · `Python Scripting` · `Linux Server Administration` · `Incident Response`
+`SIEM Querying (SPL)` · `IDS Rule Writing (Suricata)` · `Network Traffic Analysis (Zeek)` · `MITRE ATT&CK Mapping` · `Detection Engineering` · `Linux Server Administration` · `Incident Response`
 
 ---
 
@@ -52,7 +52,7 @@
 | **TA0043** | Reconnaissance | Port Scanning | [Port Scan](./MITRE/TA0043-Reconnaissance/PortScan.md) | Suricata (Signature based), Zeek (Behavioral based) |
 | **TA0006** | Credential Access | SSH Brute Force | [Brute Force](./MITRE/TA0006-CredentialAccess/bruteForce.md) | Suricata, Splunk + Linux auth.log |
 | **TA0006** | Credential Access | SMB Brute Force | [Brute Force](./MITRE/TA0006-CredentialAccess/bruteForce.md) | Suricata, Splunk + WinEventLog |
-| **TA0011** | Command & Control | HTTP Beaconing | [HTTP Beaconing](./MITRE/TA0011-Command&control/http_beconing/http_beconing.md) | Splunk + Zeek (Behavioral) |
+| **TA0011** | Command & Control | HTTP Beaconing | [HTTP Beaconing (Detection & Incident Response)](./MITRE/TA0011-Command&control/http_beconing/http_beconing.md) | Splunk + Zeek (Behavioral) |
 
 ---
 
