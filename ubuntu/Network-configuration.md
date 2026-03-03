@@ -6,12 +6,12 @@ This guide configures an Ubuntu server to act as a router, providing internet ac
 
 Ensure the Ubuntu server has two Network Interfaces (NICs):
 
-1.  **WAN Interface (Internet):** Connected to the host via NAT/Bridged (e.g., `libvirt` NAT).
+1.  **WAN Interface (Internet):** Connected to the host via NAT (e.g., `libvirt` NAT).
 2.  **LAN Interface (Internal):** Connected to the internal network (LAN) to serve the "victim" or client machine.
 
-*Tip: Check your interface names using `ip a` (e.g., `enp1s0`, `enp7s0`).*
+*Tip: Check your interface names using `ip a` (e.g., `enp0s3`, `enp0s8`).*
 
-## Step 2: Configure Netplan (Mandatory)
+## Step 2: Configure Netplan 
 
 Configure the network interfaces with static IP for the LAN and DHCP for the WAN.
 
@@ -22,16 +22,16 @@ sudo nano /etc/netplan/00-installer-config.yaml
 
 **2. Configure the network:**
 Use the structure below. Ensure indentation is correct (YAML is sensitive to spaces).
-*   `enp1s0`: WAN/Internet interface (DHCP).
-*   `enp7s0`: LAN/Internal interface (Static IP).
+*   `enp0s3`: WAN/Internet interface (DHCP).
+*   `enp0s8`: LAN/Internal interface (Static IP).
 
 ```yaml
 network:
   version: 2
   ethernets:
-    enp1s0:
+    enp0s3:
       dhcp4: true
-    enp7s0:
+    enp0s8:
       dhcp4: false
       addresses:
         - 192.168.50.1/24
@@ -46,7 +46,7 @@ sudo netplan apply
 ```bash
 ip a
 ```
-*You should see `enp7s0` is UP with IP `192.168.50.1/24`.*
+*You should see `enp0s8` is UP with IP `192.168.50.1/24`.*
 
 ## Step 3: Enable IP Forwarding
 
@@ -89,8 +89,8 @@ Enable Network Address Translation (NAT) to allow the LAN client to access the i
 sudo iptables -t nat -A POSTROUTING -o enp1s0 -j MASQUERADE
 
 # Allow forwarding from LAN to WAN
-sudo iptables -A FORWARD -i enp7s0 -o enp1s0 -j ACCEPT
+sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
 
 # Allow return traffic for established connections
-sudo iptables -A FORWARD -i enp1s0 -o enp7s0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -m state --state RELATED,ESTABLISHED -j ACCEPT
 ```

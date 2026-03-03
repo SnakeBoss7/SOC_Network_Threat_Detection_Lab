@@ -88,6 +88,7 @@ In a FIN scan, only the **FIN flag** is used. This can bypass basic firewalls bu
 - No SYN flag
 - No handshake
 - No special flow
+- Slow
 
 ```suricata
 alert tcp any any -> $HOME_NET any (
@@ -110,10 +111,21 @@ alert tcp any any -> $HOME_NET any (
 
 For slow scans and evasive techniques, behavioral analysis with **Zeek logs** in **Splunk** provides better detection.
 
+**to check all connection**
 ```spl
 index="zeek" 
 | stats dc(id.dest_p) as Unique_ports values(id.dest_p) as ports by id.dest_h id.resp_h
 | where Unique_ports > 30
+```
+**For alert with bin boundry**
+- Here we are dividing the data into buckets of five minutes
+- we can fine tune this according to the slow and fast scans 
+- This also has a limitation where if the attacker send 29 ports in one bin and 2 ports in next bin then it will not be detected.This known as **Bucker boundry problem** 
+```spl
+index="zeek" 
+| bin _time span=5m 
+| stats dc(id.dest_p) as Unique_ports values(id.dest_p) as ports by id.dest_h id.resp_h
+| where Unique_ports > 30 
 ```
 
 ![Splunk-detection](./images/splunk-port.png)

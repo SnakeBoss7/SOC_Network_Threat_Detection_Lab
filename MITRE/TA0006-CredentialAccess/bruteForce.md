@@ -9,7 +9,7 @@ crackmapexec ssh 10.10.10.1 -u TestUser -p pass.txt
 ![ssh brute force](./images/ssh-kali.png)
 
 ### Detection
-#### Suricata
+#### Suricata (Signature based detection)
 In suricata we used signature based detection. Where ssh connections uses TCP and are done on 22 port number ,and SSH connection requries full tcp handshake to be done.
 ```
 alert tcp any any -> $HOME_NET 22(
@@ -22,12 +22,13 @@ alert tcp any any -> $HOME_NET 22(
 ```
 ![Suricata Detection](./images/ssh-suricata.png)
 
-#### Splunk Detection using auth.log
-In splunk we used Auth attempt done through a src_ip or we can say remotely. Where we used the auth.log file to detect the brute force attacks.
+#### Splunk Detection using auth.log (Behavioral based detection)
+**In splunk we used Auth attempt done through a src_ip or we can say remotely. Where we used the auth.log file to detect the brute force attacks.**
+```
 index="ubuntu-auth" app=ssh action=blocked
 | stats values(action) as status values(user) as attempted_user values(tag) as tags count as Failed_login_attempts by src_ip
+```
 ![splunk Detection](./images/auth_log1.png)
-
 
 ## SMB brute force
 ### Attack
@@ -36,7 +37,7 @@ crackmapexec smb 10.10.10.5 -u insaen -p pass.txt
 ```
 ![smb brute force](./images/smb-kali.png)
 
-### Suricata
+### Suricata (Signature based detection)
 ```
 alert tcp any any -> $HOME_NET 445(
     msg:"Potential SMB Brute Force Attack";
@@ -47,7 +48,7 @@ alert tcp any any -> $HOME_NET 445(
 )
 ```
 ![Suricata Detection](./images/smbSuricata.png)
-### Splunk WinEventLog:Security
+### Splunk WinEventLog:Security (Behavioral based detection)
 ```
 index="windows10" EventCode=4625
 | eval Logon_type = case(
