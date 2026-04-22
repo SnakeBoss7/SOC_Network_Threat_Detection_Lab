@@ -23,6 +23,10 @@ sudo suricata-update
 ```bash
 sudo nano /var/lib/suricata/rules/suircata.rules
 ```
+## Test Suricata Rules
+```bash
+sudo suricata -T -c /etc/suricata/suricata.yaml
+```
 ##  Suricata Service
 
 ```bash

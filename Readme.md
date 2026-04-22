@@ -53,6 +53,7 @@
 | **TA0006** | Credential Access | SSH Brute Force | [Brute Force](./MITRE/TA0006-CredentialAccess/bruteForce.md) | Suricata, Splunk + Linux auth.log |
 | **TA0006** | Credential Access | SMB Brute Force | [Brute Force](./MITRE/TA0006-CredentialAccess/bruteForce.md) | Suricata, Splunk + WinEventLog |
 | **TA0011** | Command & Control | HTTP Beaconing | [HTTP Beaconing (Detection & Incident Response)](./MITRE/TA0011-Command&control/http_beconing/http_beconing.md) | Splunk + Zeek (Behavioral) |
+| **TA0011** | Command & Control | Reverse Shell | [Reverse Shell](./MITRE/TA0011-Command&control/reverse_shell/reverse_shell.md) | Suricata, Splunk + Zeek |
 
 ---
 
