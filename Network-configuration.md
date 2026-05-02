@@ -1,4 +1,5 @@
-# Ubuntu Router Setup Guide
+# Network Configuration for this lab
+## Ubuntu Router Setup Guide
 
 This guide configures an Ubuntu server to act as a router, providing internet access to a client machine (e.g., Windows 11) on an internal LAN.
 
@@ -94,3 +95,22 @@ sudo iptables -A FORWARD -i enp0s8 -o enp0s3 -j ACCEPT
 # Allow return traffic for established connections
 sudo iptables -A FORWARD -i enp0s3 -o enp0s8 -m state --state RELATED,ESTABLISHED -j ACCEPT
 ```
+
+
+## Kali linux
+```
+#temporary
+ip addr add 10.10.10.20 dev eth0
+sudo ip link set eth0 up
+ip route default via 10.10.10.1 dev eth0
+
+#persistant
+nmcli con mod eth0 ipv4.addresses 10.10.10.20/24
+nmcli con mod eth0 ipv4.gateway 10.10.10.1
+nmcli con mod eth0 ipv4.method manual
+nmcli con up eth0
+```
+
+Invoke-WebRequest -Uri https://packages.wazuh.com/4.x/windows/wazuh-agent-4.7.5-1.msi -OutFile
+${env.tmp}\wazuh-agent; msiexec.exe /i ${env.tmp}\wazuh-agent /q WAZUH_MANAGER='10.10.10.1'
+WAZUH_AGENT_NAME='Win10' WAZUH_REGISTRATION_SERVER='10.10.10.1'

@@ -10,11 +10,12 @@ crackmapexec ssh 10.10.10.1 -u TestUser -p pass.txt
 
 ### Detection
 #### Suricata (Signature based detection)
-In suricata we used signature based detection. Where ssh connections uses TCP and are done on 22 port number ,and SSH connection requries full tcp handshake to be done.
+In suricata we used signature based detection. Where ssh connections uses TCP and are done on 22 port number(generally but here we are using ssh proto directly as suricata supports its detection ) ,and SSH connection requries full tcp handshake to be done.
 ```
-alert tcp any any -> $HOME_NET 22(
+alert ssh any any -> $HOME_NET any(
     msg:"Potential SSH Brute Force Attack";
     flow:to_server,established;
+    ssh.proto;content:"2.0";
     threshold: type both, track by_src, count 10, seconds 60;
     sid:1000002;
     rev:1;
@@ -39,9 +40,10 @@ crackmapexec smb 10.10.10.5 -u insaen -p pass.txt
 
 ### Suricata (Signature based detection)
 ```
-alert tcp any any -> $HOME_NET 445(
+alert smb any any -> $HOME_NET any(
     msg:"Potential SMB Brute Force Attack";
     flow:to_server,established;
+    smb.ntlmssp.user; content:!"";
     threshold: type both, track by_src, count 10, seconds 60;
     sid:1000003;
     rev:1;
