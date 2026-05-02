@@ -110,7 +110,3 @@ nmcli con mod eth0 ipv4.gateway 10.10.10.1
 nmcli con mod eth0 ipv4.method manual
 nmcli con up eth0
 ```
-
-Invoke-WebRequest -Uri https://packages.wazuh.com/4.x/windows/wazuh-agent-4.7.5-1.msi -OutFile
-${env.tmp}\wazuh-agent; msiexec.exe /i ${env.tmp}\wazuh-agent /q WAZUH_MANAGER='10.10.10.1'
-WAZUH_AGENT_NAME='Win10' WAZUH_REGISTRATION_SERVER='10.10.10.1'
